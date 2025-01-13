@@ -8,6 +8,6 @@ Pronto un libro colaborativo.
 
 Los programas estarán en la carpeta src
 
-! [](doc/rstudio.jpeg)
+![](doc/rstudio.jpeg)
 
 
