@@ -1,0 +1,107 @@
+---
+title: "Ejercicios 1 a 5"
+author: "Carmen Neri"
+date: "2025-01-13"
+output: html_document
+---
+# Contenido
+Este markdown incluye los scripts para los ejercicios 1 al 5 de la clase de introducción a R 2025.
+
+# Ejercicio 3: manejo de tierras agrícolas
+## Datos sobre prácticas de manejo de tierras agrícolas y su secuestro de carbono
+
+```{r}
+# Distribuciones normales de cada practica
+TSCNormLaboreo=rnorm(200,0.1,0.13)
+TSCNormFerti=rnorm(200,0.9,0.13)
+TSCNormComp=rnorm(200,0.5,0.13)
+
+# Vectores con las etiquetas de cada practica, es factor
+Practlab=rep("Laboreo",200)
+Practfer=rep("Fertilizacion",200)
+Practcom=rep("Composta",200)
+
+# Unir distribución y vector de laboreo en un DF
+HojaLab=data.frame(Practlab,TSCNormLaboreo)
+
+# Nombres de columnas
+colnames(HojaLab)=c("Practica","Tasa")
+
+# Unir distribución y vector de Fertilización en un DF
+HojaFer=data.frame(Practfer,TSCNormFerti)
+
+# Nombres de columnas
+colnames(HojaFer)=c("Practica","Tasa")
+
+# Unir distribución y vector de Composta en un DF
+HojaCom=data.frame(Practcom,TSCNormComp)
+
+# Nombres de columnas
+colnames(HojaCom)=c("Practica","Tasa")
+
+# unir todas las DF
+resultados=rbind(HojaLab,HojaFer,HojaCom)
+boxplot(resultados$Tasa~resultados$Practica)
+```
+
+# Ejercicio 4: área basal de parcelas de árboles
+## Datos del área basal de 10 parcelas de árboles, conformadas por distintos números de árboles con distintos diámetros a la altura de pecho
+
+```{r}
+# Leer o convocar la base de datos
+ej_4 = read.csv("AreaBasal.csv", header = TRUE)
+
+# Revisar estructura y encabezado
+str(ej_4)
+head(ej_4)
+
+# Cálculo del área basal promedio (vector de diámetros promedio de cada clase diametral DAP, ecuación para calcular el área basal de un árbol promedio de cada clase diametral)
+DAP = c(2.3, 4.5, 5.5, 6.0, 6.4, 6.8, 7.7, 7.9, 8.1, 9.0)
+ABT = 3.14 * (DAP^2 / 40000)
+
+# Multiplicación por individuos y suma por parcela, con redondeo hacia abajo 
+AP1 = ABT * ej_4[1, ]
+ABTP1 = sum(AP1)
+ABTP11 = round(sum(AP1), digits = 2)
+
+# Cálculo del área basal por parcela (vector vacío con la misma longitud que ABT; loop que multiplica la ABT de cada clase (ABT) por la cantidad de individuos por clase de cada parcela (ej_4[b,]), sume el área basal de cada parcela(sum(ABT*ej_4)) y redondea (round(sum),digits))
+ABTPT = numeric(length(DAP))
+for (i in 1:length(ABT)) {
+  ABTPT[i] = round(sum(ABT * ej_4[i, ]), digits = 2)
+}
+ABTT = sum(ABTPT)
+print(ABTT)
+```
+# Ejercicio extra
+## Datos de ocurrencias de reportes del servicio de aguas
+```{r}
+# Importar loa datos
+BD = read.csv("CONTRERAS.csv", header = TRUE, encoding = "UTF-8", check.names = FALSE)
+
+# Verificar estructura y nombres de variables
+str(BD)
+names(BD)
+
+# Crear nueva variable 'Tipo' a partir de 'DICTAMEN'
+BD$Tipo = ifelse(BD$DICTAMEN == "ATARJEA OBSTRUIDA", "Obstruction",
+          ifelse(BD$DICTAMEN == "COLADERA OBSTRUIDA", "Obstruction",
+          ifelse(BD$DICTAMEN == "FALTA DE INFRAESTRUCTURA", "Sewage overflow",
+          ifelse(BD$DICTAMEN == "INSUFICIENCIA DE ATARJEA Y COLECTOR", "Sewage overflow",
+          ifelse(BD$DICTAMEN == "INSUFICIENCIA DE GRIETA", "Sewage overflow",
+          ifelse(BD$DICTAMEN == "RUPTURA DE TUBO DE AGUA POTABLE", "Breaking off",
+          ifelse(BD$DICTAMEN == "INEXISTENTE AL MOMENTO DE LA INSPECCION [NO SE APRECIAN DIMENSIONES]", "Lacking Info",
+          ifelse(BD$DICTAMEN == "NO SE OPERO CARCAMO DE BOMBEO", "Pump Failure",
+          ifelse(BD$DICTAMEN == "HUNDIMIENTO DE CARPETA ASFALTICA", "Sinking", "Otros")))))))))
+
+# Crear dos subgrupos por años
+G1 = subset(BD, Año %in% c(2007, 2008, 2009))
+G2 = subset(BD, Año %in% c(2010, 2011, 2012, 2013, 2014))
+
+# Gráficos de frecuencia
+barplot(FAG1$Frecuencia, names.arg = FAG1$Año, main = "Frecuencia por Año", xlab = "Año", ylab = "Frecuencia")
+barplot(FAG2$Frecuencia, names.arg = FAG2$Año, main = "Frecuencia por Año", xlab = "Año", ylab = "Frecuencia")
+barplot(FTG1$Frecuencia, names.arg = FTG1$Tipo, main = "Frecuencia por Tipo", xlab = "Tipo", ylab = "Frecuencia")
+barplot(FTG2$Frecuencia, names.arg = FTG2$Tipo, main = "Frecuencia por Tipo", xlab = "Tipo", ylab = "Frecuencia")
+
+```
+
